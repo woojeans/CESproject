@@ -1,34 +1,26 @@
-from flask import Flask, render_template, request, Response, send_file
-from datetime import datetime
-
-import cv2
-import mediapipe as mp
-import numpy as np
+from flask import Flask, render_template, request, jsonify, session
+from flask_socketio import SocketIO
 import os
+import cv2
+import base64
+import numpy as np
 
-from pyngrok import conf, ngrok
+import mediapipe as mp
+from moviepy.editor import *
+from scipy.spatial import distance
+from sklearn.preprocessing import MinMaxScaler
 
-app = Flask(__name__)
-
-# 웹캠 캡처 객체 및 녹화 상태 변수
-video_capture = cv2.VideoCapture(1)
-recording = False
-frames = []
-
-# 포즈 감지 모델 초기화
-mp_pose = mp.solutions.pose
-pose_video = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.7,
-                          min_tracking_confidence=0.7)
-mp_drawing = mp.solutions.drawing_utils
-
+user_landmark = None
 # 포즈 검출 함수
-def detectPose(image_pose, pose, draw=False):
+def detectPose(image_pose, draw=False):
+    mp_pose = mp.solutions.pose
+    pose_video = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.7,
+                            min_tracking_confidence=0.7)
+    mp_drawing = mp.solutions.drawing_utils
     
     original_image = image_pose.copy()
-    
     image_in_RGB = cv2.cvtColor(image_pose, cv2.COLOR_BGR2RGB)
-    
-    resultant = pose.process(image_in_RGB)
+    resultant = pose_video.process(image_in_RGB)
 
     if resultant.pose_landmarks and draw:    
 
@@ -40,29 +32,38 @@ def detectPose(image_pose, pose, draw=False):
                                                                                thickness=2, circle_radius=2))
     return original_image, resultant
 
-# 웹캠 프레임 생성 함수
-def generate_frames():
-    while True:
-        # 녹화 중일 때만 프레임 읽기
-        if recording:
-            success, frame = video_capture.read()
-            if not success:
-                break
 
-            # 이미지 좌우 반전
-            flipped_image = cv2.flip(frame, 1)
-            
-            test_frame, _ = detectPose(flipped_image, pose_video, True)
+def dist_sim_part(target, user):
+    if target.pose_world_landmarks != None and user != None:
+        # 좌표값 추출
+        target_landmarks = target.pose_world_landmarks.landmark
+        target_lm = np.array([[i.x, i.y, i.z] for i in target_landmarks])
+        # target_lm = target_lm[part, :]
+        
+        user_landmarks = user.pose_world_landmarks.landmark
+        user_lm = np.array([[i.x, i.y, i.z] for i in user_landmarks])
+        # user_lm = user_lm[part, :]
 
-            # 프레임을 JPEG 형식으로 인코딩
-            ret, buffer = cv2.imencode('.jpg', test_frame)
-            frame = buffer.tobytes()
-            
-            frames.append(frame)
+        # 정규화
+        scaler = MinMaxScaler()
+        target_norm = scaler.fit_transform(target_lm)
+        user_norm = scaler.fit_transform(user_lm)
+        
+        # 거리 구하기
+        dis_x = distance.euclidean(target_norm[:, 0], user_norm[:, 0])
+        dis_y = distance.euclidean(target_norm[:, 1], user_norm[:, 1])
+        dis_z = distance.euclidean(target_norm[:, 2], user_norm[:, 2])
+        
+        # sim
+        similarity = 1/(1+np.mean([dis_x, dis_y, dis_z]))
+        
+        return round(similarity * 100, 2)
+    else:
+        return 0
 
-            # 프레임 반환
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+app = Flask(__name__)
+socketio = SocketIO(app)
+app.secret_key = 'Uni4'
 
 @app.route('/')
 def index():
@@ -78,51 +79,53 @@ def menu1():
 # 영상 녹화
 @app.route('/dancescoring/rec', methods=['GET', 'POST'])
 def menu1_rec():
+    # selectedCameraIndex = request.args.get('selectedCameraIndex', default=0)
     video_file = request.args.get('video', '')
     video_file = video_file.split('.')[0] + '.mp4'
+
+    session['video_file'] = video_file
     return render_template('dance_rec.html', video_file=video_file)
 
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
 
-# 비디오 스트리밍 경로 처리
-@app.route('/dancescoring/rec/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@socketio.on('frame')
+def handle_frame(frame):
+    global user_landmark
 
-# 녹화 시작 및 정지 경로 처리
-@app.route('/dancescoring/rec/toggle_record')
-def toggle_record():
-    global recording, frames, video_capture
-    recording = not recording
-    return {'status': 'success', 'recording': recording}
+    # 디코드
+    frame_data = frame.split(',')[1]
+    image_data = base64.b64decode(frame_data)
+    nparr = np.fromstring(image_data, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-# 다운로드 경로 처리
-@app.route('/dancescoring/rec/download_video')
-def download_video():
-    global frames
+    # 좌우 반전 처리
+    img_flipped = cv2.flip(img, 1)
+    det_img, user_landmark = detectPose(img_flipped, True)
 
-    # 파일 이름은 현재 시간으로 설정
-    filename = f"recorded_video_{datetime.now().strftime('%Y%m%d%H%M%S')}.mp4"
-    file_path = os.path.join(os.getcwd(), filename)
+    # 다시 데이터 URI로 변환
+    _, img_encoded = cv2.imencode('.jpg', det_img)
+    frame_flipped = "data:image/jpeg;base64," + base64.b64encode(img_encoded).decode('utf-8')
 
-    # 프레임들을 비디오로 저장
-    height, width, layers = cv2.imdecode(np.frombuffer(frames[0], dtype=np.uint8), cv2.IMREAD_UNCHANGED).shape
-    video_writer = cv2.VideoWriter(file_path, cv2.VideoWriter_fourcc(*'XVID'), 10, (width, height))
+    socketio.emit('frame', frame_flipped)
 
-    for frame in frames:
-        video_writer.write(cv2.imdecode(np.frombuffer(frame, dtype=np.uint8), cv2.IMREAD_UNCHANGED))
+@app.route('/update_time', methods=['POST'])
+def update_time():
+    data = request.get_json()
+    current_time = data.get('currentTime')
 
-    video_writer.release()
-    
-    # 녹화 중이 아닐 때만 웹캠 꺼지도록
-    video_capture.release()
+    video_file = session.get('video_file')
+    # user_landmark = session.get('user_landmark')
+    global user_landmark
+    target_video = VideoFileClip('./static/dance/'+video_file)
+    img = target_video.get_frame(current_time)
 
-    return send_file(file_path, as_attachment=True)
+    _, target_landmark = detectPose(img, False)
+    score = dist_sim_part(target_landmark, user_landmark)
 
+    socketio.emit('score', {'score': score})
 
-# 모션 딥페이크
-@app.route('/motiondeepfacke')
-def menu2():
-    return render_template('about.html')
+    return jsonify({'message': 'Time updated successfully'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

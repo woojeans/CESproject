@@ -1,65 +1,51 @@
-//DOM
-const recordButton =document.querySelector(".record-button");
-const stopButton =document.querySelector(".stop-button");
-const playButton =document.querySelector(".play-button");
-const downloadButton =document.querySelector(".download-button");
- 
-const previewPlayer = document.querySelector("#preview");
-const recordingPlayer = document.querySelector("#recording");
+// 웹캠을 선택할 수 있는 드롭다운 목록 요소
+var select = document.getElementById("cameraSelect");
 
-const video1 = document.getElementById('video1');
- 
-let recorder;
-let recordedChunks;
- 
-//functions
-function videoStart() {
-    navigator.mediaDevices.getUserMedia({ video:true,audio:true })
-    .then(stream => {
-        previewPlayer.srcObject = stream;
-        startRecording(previewPlayer.captureStream())
+// 미디어 장치 목록 가져오기 및 드롭다운 목록 채우기
+async function getCameraList() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        devices.forEach(device => {
+            if (device.kind === 'videoinput') {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `카메라 ${select.options.length + 1}`;
+                select.appendChild(option);
+            }
+        });
+    } catch (error) {
+        console.error('미디어 장치 목록을 가져오는 중 오류가 발생했습니다: ', error);
+    }
+}
+
+// 페이지 로딩 시 미디어 장치 목록 가져오기
+getCameraList();
+
+// 선택한 카메라 옵션을 서버로 보내기
+select.addEventListener('change', () => {
+    const selectedCameraIndex = select.selectedIndex;
+
+    // 선택한 값을 Flask 서버로 보내기
+    fetch('/dancescoring/rec/send_selection', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ selectedCameraIndex })
     })
-    
-}
- 
-function startRecording(stream) {
-    recordedChunks=[];
-    recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = (e)=>{ recordedChunks.push(e.data) }
-    recorder.start();
-    recordButton.disabled=true;
-    stopButton.disabled=false;
-    video1.play();
-}
- 
-function stopRecording() {
-    previewPlayer.srcObject.getTracks().forEach(track => track.stop());
-    recorder.stop();
-    recordButton.disabled=false;
-    stopButton.disabled=true;
-    video1.pause();
-}
- 
-function downloadRecording() {
-    const recordedBlob = new Blob(recordedChunks, {type:"video/webm"});
-    const downloadUrl = URL.createObjectURL(recordedBlob);
+    .then(response => response.json())
+    .then(data => {
+        // 서버로부터의 응답 처리
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('서버 요청 중 오류가 발생했습니다: ', error);
+    });
+});
 
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = `webcam_recording_${new Date()}.webm`;
-    a.click();
-    
-    // Clean up
-    URL.revokeObjectURL(downloadUrl);
-    recordedChunks = [];
 
-    // recordingPlayer.src=URL.createObjectURL(recordedBlob);
-    // recordingPlayer.play();
-    // downloadButton.href=recordingPlayer.src;
-    // downloadButton.download =`recording_${new Date()}.webm`;
-    // console.log(recordingPlayer.src);
-}
-
+// 토글 체크 여부로 웹캠 켜고 끄기
+// 토글 요소 가져오기
 function toggleRecord() {
     fetch('/dancescoring/rec/toggle_record')
         .then(response => response.json())
@@ -69,20 +55,33 @@ function toggleRecord() {
 
                 // 녹화 중지일 경우 비디오 멈추기
                 if(!data.recording){
-                    video1.pause();
                 }
             } else {
                 console.error('Failed to toggle recording');
             }
         });
-    video1.play();
 }
 
-function downloadVideo() {
-    window.location.href = '/dancescoring/rec/download_video';
-}
- 
-//event
-recordButton.addEventListener("click",videoStart);
-stopButton.addEventListener("click",stopRecording);
-downloadButton.addEventListener("click",downloadRecording);
+// 시간 위치 보내기
+const video = document.getElementById("target_video");
+let interval;
+
+document.getElementById('startBtn').addEventListener('click', function() {
+    video.play();
+    interval = setInterval(function() {
+        const currentTime = video.currentTime;
+        fetch("/dancescoring/rec/update_time", {
+            method: "POST",
+            body: JSON.stringify({ currentTime: currentTime }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }, 50);
+});
+
+document.getElementById('pauseBtn').addEventListener('click', function() {
+    // When the PAUSE button is clicked, stop sending updates by clearing the interval
+    clearInterval(interval);
+    video.pause();
+});

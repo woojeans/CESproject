@@ -56,7 +56,7 @@
 					<div class="row justify-content-between">
 						<div class="col-lg-5">
 							<div class="intro-excerpt">
-								<h1>Checkout</h1>
+								<h1>노래 제목</h1>
 							</div>
 						</div>
 						<div class="col-lg-7">
@@ -66,16 +66,23 @@
 				</div>
 			</div>
 		<!-- End Hero Section -->
-
+		
 		<div class="untree_co-section">
+			<div class="container">
+				<div class="cameraSwith">
+					<select id="cameraSelect"></select>
+					<input type="checkbox" id="toggle" name="toggle" hidden>
+					<label for="toggle" class="toggleSwitch">
+						<span class="toggleButton"></span>
+					</label>
+				</div>
+			</div>
 		    <div class="container">
 		      <div class="row">
 		        <div class="col-md-6 mb-5 mb-md-0">
-		          <h2 class="h3 mb-3 text-black">노래 제목</h2>
 		          <div class="p-3 p-lg-5 border bg-white" id="videoContainer">
-		            <video class="custom-video" id="video1" controls>
+		            <video class="custom-video" id="target_video" controls>
 						<source src="{{ url_for('static', filename='dance/' + video_file) }}" type="video/mp4">
-						<!-- <source src="../static/dance/newjeans - hypeboy.mp4" type="video/mp4">-->
 						no video
 					</video>
 		          </div>
@@ -83,20 +90,19 @@
 		        <div class="col-md-6">
 		          <div class="row mb-5">
 		            <div class="col-md-12">
-		              <h2 class="h3 mb-3 text-black">영상 녹화</h2>
 		              <div class="p-3 p-lg-5 border bg-white">
-						<img class="custom-video" id="video_feed" src="{{ url_for('video_feed') }}" alt="Webcam Stream">
-						<!-- <video class="custom-video" autoplay muted id="preview"></video> -->
+						<video class="custom-video" autoplay muted id="webcam"></video>
 		                </div>
 		              </div>
 		            </div>
 		          </div>
-				  <h1 class="score">여기에 점수가 나올꺼야</h1>
+				  <h1 class="score">Score: <span id="score">0</span></h1>
 				  <div class="score">
 					<p>
 						<!-- <button class="record-button btn btn-secondary me-2" >Start Recording</button>
 						<button class="stop-button btn btn-black btn-sm btn-block" disabled>Stop Recording</button> -->
-						<button class="btn btn-secondary me-2" onclick="toggleRecord()">녹화시작</button>
+						<button class="btn btn-secondary me-2" id="startBtn">START</button>
+						<button class="btn btn-secondary me-2" id="pauseBtn">PAUSE</button>
 						<button class="btn btn-secondary me-2" onclick="downloadVideo()">다운로드</button>
 						<!-- <a class="download-button btn btn-secondary me-2">다운로드</a> -->
 					</p>
@@ -207,12 +213,13 @@
 		</footer>
 		<!-- End Footer Section -->	
 
-
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 		<script src="../static/js/bootstrap.bundle.min.js"></script>
 		<script src="../static/js/tiny-slider.js"></script>
 		<script src="../static/js/custom.js"></script>
-		<script src="../static/js/camera.js"></script>
-		<script src="../static/js/test.js"></script>
+		<script src="../static/js/webcam.js"></script>
+		<script src="../static/js/target-video.js"></script>
+
 	</body>
 
 </html>
