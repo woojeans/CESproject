@@ -1,0 +1,139 @@
+/* 폭죽 */
+.firework1 {
+  animation: firework1 1.2s both infinite;
+  animation-delay: 0.1s;
+  top: 60%;
+  left: 65%;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #ff382e;
+}
+
+.firework2 {
+  animation: firework2 1.2s both infinite;
+  animation-delay: 0.1s;
+  top: 55%;
+  left: 50%;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #ff6933;
+}
+
+.firework3 {
+  animation: firework3 1.2s both infinite;
+  animation-delay: 0.1s;
+  top: 65%;
+  left: 85%;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #ff9c38;
+}
+
+.firework4 {
+  animation: firework4 1.2s both infinite;
+  animation-delay: 0.1s;
+  top: 50%;
+  left: 35%;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #ffd53d;
+}
+
+.firework5 {
+  animation: firework5 1.2s both infinite;
+  animation-delay: 0.1s;
+  top: 35%;
+  left: 60%;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #ffe680;
+}
+
+
+@keyframes firework1 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    box-shadow: -5rem 0rem 0 #ff382e, 5rem 0rem 0 #ff382e, 0rem -5rem 0 #ff382e,
+      0rem 5rem 0 #ff382e, 3.5rem -3.5rem 0 #ff382e, 3.5rem 3.5rem 0 #ff382e,
+      -3.5rem -3.5rem 0 #ff382e, -3.5rem 3.5rem 0 #ff382e;
+  }
+}
+@keyframes firework2 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    box-shadow: -5rem 0rem 0 #ff6933, 5rem 0rem 0 #ff6933,
+      0rem -5rem 0 #ff6933, 0rem 5rem 0 #ff6933, 3.5rem -3.5rem 0 #ff6933,
+      3.5rem 3.5rem 0 #ff6933, -3.5rem -3.5rem 0 #ff6933,
+      -3.5rem 3.5rem 0 #ff6933;
+  }
+}
+@keyframes firework3 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    box-shadow: -5rem 0rem 0 #ff9c38, 5rem 0rem 0 #ff9c38,
+      0rem -5rem 0 #ff9c38, 0rem 5rem 0 #ff9c38, 3.5rem -3.5rem 0 #ff9c38,
+      3.5rem 3.5rem 0 #ff9c38, -3.5rem -3.5rem 0 #ff9c38,
+      -3.5rem 3.5rem 0 #ff9c38;
+  }
+}
+@keyframes firework4 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    box-shadow: -5rem 0rem 0 #ffd53d, 5rem 0rem 0 #ffd53d, 0rem -5rem 0 #ffd53d,
+      0rem 5rem 0 #ffd53d, 3.5rem -3.5rem 0 #ffd53d, 3.5rem 3.5rem 0 #ffd53d,
+      -3.5rem -3.5rem 0 #ffd53d, -3.5rem 3.5rem 0 #ffd53d;
+  }
+}
+@keyframes firework5 {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    box-shadow: -5rem 0rem 0 #ffe680, 5rem 0rem 0 #ffe680, 0rem -5rem 0 #ffe680,
+      0rem 5rem 0 #ffe680, 3.5rem -3.5rem 0 #ffe680, 3.5rem 3.5rem 0 #ffe680,
+      -3.5rem -3.5rem 0 #ffe680, -3.5rem 3.5rem 0 #ffe680;
+  }
+}
