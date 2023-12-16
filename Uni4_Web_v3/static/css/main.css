@@ -1,0 +1,483 @@
+@import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
+
+* {
+  box-sizing: border-box;
+}
+body {
+  font-size: 14px;
+  font-family: 'NanumSquare', sans-serif !important;
+}
+.bg-home {
+  width: 100%;
+  height: 100vh;
+  /* background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/img/"); */
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.bg-dancescoring {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/img/bg-dancescoring.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+
+.bg-rec{
+  width: 100%;
+  height: 100vh;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+}
+
+.bg-clothchage {
+  width: 100%;
+  height: 100vh;
+  background: url("../assets/img/bg-clothchange.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+
+.nav-link{
+  font-size: 18px !important;
+  padding-left: 1em !important;
+  padding-right: 1em !important;
+  font-weight: 400;
+}
+
+.nav-link.active {
+  color: #fff !important;
+  font-weight: 800 !important;
+  border-bottom: 2px solid #fff;
+  border-radius: 2px;
+}
+
+.nav-link.deactive {
+  color: #ffffffa6 !important;
+  font-weight: 500 !important;
+}
+
+
+.bgtext {
+  flex: 1;
+  width: 100%;
+  height: 55%;
+  padding-bottom: 3%;
+}
+
+.bgtext h1 {
+  color: rgba(255,255,255);
+  font-family: Noto Sans KR;
+  font-weight: 900;
+  font-size: 65px;
+  /* padding-bottom: 3%; */
+}
+
+.dance-name {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 1%;
+}
+
+.dance-name h1 {
+  color: rgba(255,255,255);
+  font-family: Noto Sans KR;
+  font-weight: 900;
+  font-size: 45px;
+  /* padding-bottom: 3%; */
+}
+
+.select-dance {
+  width: 100%;
+  height: 45%;
+  background: rgba(255,255,255,0.2);
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+}
+
+/* .album-bg {
+  width: 100%;
+  height: 40%;
+  background: url('../assets/dance/album/newjeans-supershy.webp');
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+} */
+
+.album-filter {
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  padding: 30px 120px;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+}
+
+.music-list{
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.album{
+  border-radius: 1rem;
+  max-width: 80%;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.music-title{
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.music-idol{
+  opacity: 0.7;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.model-img{
+  width: 100%;
+  height: 100vh;
+  padding-top: 100px;
+  padding-left: 10%;
+}
+
+.cc-select{
+  width: 55%;
+}
+
+.md-select{
+  width: 100%;
+  margin-top: 1%;
+}
+
+.cc-text{
+  width: 100%;
+  padding-bottom: 5%;
+  padding-left: 120px;
+  padding-right: 120px;
+}
+
+.cc-text h1 {
+  color: rgba(255,255,255);
+  font-family: Noto Sans KR;
+  font-weight: 900;
+  font-size: 65px;
+}
+
+.img-model {
+  background: url("../assets/img/model_jin.png");
+  background-size: cover;
+  width: 40%;
+  height: 100vh;
+}
+
+.select-model {
+  width: 100%;
+  background: rgba(255,255,255,0.4);
+  padding: 1em 2em;
+  opacity: 1;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+  border-radius: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.select-cloth {
+  width: 100%;
+  background: rgba(255,255,255,0.4);
+  padding: 1.5em 2em;
+  opacity: 1;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+  border-radius: 0.5em;
+  margin-top: 0.5em;
+}
+
+.select-fake{
+  width: 100%;
+  background: rgba(255,255,255,0.4);
+  padding: 1.5em 2em;
+  opacity: 1;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+  border-radius: 0.5em;
+  margin-top: 0.5em;
+}
+
+.model-btn{
+  margin: 1em;
+  font-size: 18px;
+  font-weight: 400;
+  background-color: transparent;
+  border: none;
+}
+
+.model-btn.active{
+  color: #71A1FF;
+  font-weight: 800;
+}
+
+.cloth-img{
+  border-radius: 10px;
+}
+
+.video{
+  width: 100%;
+  /* height: 60%; */
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+.custom-video{
+  width: 100%;
+  height: 98%;
+  object-fit: cover;
+}
+
+.video-pannel{
+  width: 100%;
+  height: 100%;
+  padding-top: 55vh;
+  padding-bottom: 200vh;
+}
+
+.mp-pannel{
+  width: 100%;
+  height: 100%;
+}
+
+.select-video{
+  width: 100%;
+  height: 60vh;
+  background: rgba(255,255,255,0.4);
+  /* padding: 1em 2em; */
+  opacity: 1;
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+  border-radius: 0.5em;
+}
+
+.textmp {
+  flex: 1;
+  width: 100%;
+  height: 25%;
+}
+
+.textmp h1 {
+  color: rgba(255,255,255);
+  font-family: Noto Sans KR;
+  font-weight: 900;
+  font-size: 65px;
+}
+
+.mp-video{
+  height: 85%;
+  padding: 2em 2em 0em 2em;
+}
+
+.md-result {
+  display: flex;
+  justify-content: center; /* 가로 가운데 정렬 */
+  align-items: center; /* 세로 가운데 정렬 */
+  height: 70vh; /* 화면 전체 높이를 차지하도록 설정 */
+}
+
+
+.video-btn{
+  padding: 1em;
+  height: 15%;
+}
+
+.video-btn button{
+  border: transparent;
+  background-color: transparent;
+}
+
+.mp-video-btn{
+  height: 100%;
+  border-radius: 100%;
+}
+
+button{
+  border: transparent;
+  background-color: transparent;
+}
+
+.mp-model{
+  max-height: 60vh;
+}
+
+
+/* 토글 버튼 디자인 */
+.toggleSwitch {
+  width: 70px;
+  height: 30px;
+  display: block;
+  position: relative;
+  border-radius: 30px;
+  background-color: transparent;
+  cursor: pointer;
+  border: 2px solid #fff;
+  margin-top: 0.3em;
+}
+
+.toggleSwitch .toggleButton {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff;
+}
+
+#toggle:checked ~ .toggleSwitch {
+  background: #F05164;
+}
+
+#toggle:checked ~ .toggleSwitch .toggleButton {
+  left: calc(100% - 24px);
+  background: #fff;
+}
+
+.toggleSwitch, .toggleButton {
+  transition: all 0.2s ease-in;
+}
+
+.camera-opt{
+  padding: 0em 1em 0em 1em;
+  font-size: 20px;
+}
+
+#cameraSelect {
+  width: 170px;
+  height: 30px;
+  border-radius: 5px;
+  /* appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none; */
+  padding: 5px 10px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 0 2px #fff;
+  background-color: transparent;
+  margin-top: 0.3em;
+  font-size: 16px;
+  color: #ffffffb7;
+}
+
+.score-box{
+  width: 300px;
+  height: 150px;
+  font-size: 30px;
+  border: 3px solid #ffffffab;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.score{
+  font-size: 80px;
+  font-weight: 800;
+  color: #fff;
+  height: 70%;
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+}
+
+.lock-screen {
+  width: 100%;
+  height: 60%;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+}
+
+#startDialog{
+  position: absolute;
+  width: 100vw;
+  height: 100%;
+  background-color: #00000080;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#startDialogBtn{
+  width: 410px;
+  height: 100px;
+  font-size: 90px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+}
+
+#restartDialogBtn{
+  width: 410px;
+  height: 100px;
+  font-size: 90px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#resulttDialogBtn{
+  width: 410px;
+  height: 100px;
+  font-size: 90px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#countdown{
+  width: 410px;
+  height: 100px;
+  font-size: 90px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}

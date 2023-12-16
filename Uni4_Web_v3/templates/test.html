@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pose Detection with Mediapipe</title>
+  <style>
+    
+/* 토글 버튼 디자인 */
+.toggleSwitch {
+  width: 70px;
+  height: 30px;
+  display: block;
+  position: relative;
+  border-radius: 30px;
+  background-color: transparent;
+  cursor: pointer;
+  border: 2px solid #000;
+  margin-top: 0.3em;
+}
+
+.toggleSwitch .toggleButton {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #000;
+}
+
+#toggle:checked ~ .toggleSwitch {
+  background: #F05164;
+}
+
+#toggle:checked ~ .toggleSwitch .toggleButton {
+  left: calc(100% - 24px);
+  background: #000;
+}
+
+.toggleSwitch, .toggleButton {
+  transition: all 0.2s ease-in;
+}
+  </style>
+</head>
+<body>
+  <select id="cameraSelect"></select>
+
+  <input type="checkbox" id="toggle" name="toggle" hidden>
+  <label for="toggle" class="toggleSwitch">
+      <span class="toggleButton"></span>
+  </label>
+
+  <video id="videoElement" width="640" height="480" autoplay></video>
+  <video id="videoElement2" width="640" height="480" autoplay></video>
+  <canvas id="outputCanvas" width="640" height="480"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script>
+    const cameraSelect = document.getElementById('cameraSelect');
+    const videoOn = document.getElementById('toggle');
+
+    const videoElement = document.getElementById('videoElement');
+    const videoElement2 = document.getElementById('videoElement2');
+    const canvasElement = document.getElementById('outputCanvas');
+    const canvasCtx = canvasElement.getContext('2d');
+
+    let stream = null;
+
+    // 웹캠 목록을 가져오고 선택 목록을 채우는 함수
+    async function getWebcamList(){
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        videoDevices.forEach(device => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+            cameraSelect.appendChild(option);
+        });
+    }
+    getWebcamList();
+
+
+    // 웹캠 켜고 끄기
+    let cameraRunning = false;
+    videoOn.addEventListener('change', function () {
+        if (this.checked) {
+            startCamera();
+        } else {
+            stopCamera();
+        }
+    });
+
+    function startCamera() {
+        if (!cameraRunning) {
+            const selectedCameraId = cameraSelect.value;
+            
+            // 웹캠 열기
+            navigator.mediaDevices.getUserMedia({ video: {deviceId: selectedCameraId} })
+            .then(function (cameraStream) {
+                stream = cameraStream;
+                videoElement.srcObject = cameraStream;
+                camera.start();
+            });
+
+        cameraRunning = true;
+        outputCanvas.style.display = "inline"; // 숨기기
+        }
+    }
+
+    function stopCamera() {
+        if(cameraRunning){
+            const stream = videoElement.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+            outputCanvas.style.display = "none"; // 숨기기
+            user_landmarks = null;
+            cameraRunning = false;
+        }
+    }
+
+    // 미디아파이프
+    camera = new Camera(videoElement2, {
+      onFrame: async () => {
+        await pose.send({ image: videoElement });
+      }
+    });
+    
+
+    const pose = new Pose({
+      locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+      }
+    });
+
+    pose.setOptions({
+        upperBodyOnly: true,
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    });
+
+    pose.onResults((results) => {
+      canvasCtx.save(); 	// 캔버스 설정 저장
+      canvasCtx.clearRect(0, 0, videoElement.width, videoElement.height); // 캔버스 초기화
+      
+      // 캔버스에 이미지 넣기
+      canvasCtx.drawImage(results.image, 0, 0, videoElement.width, videoElement.height);
+
+      drawLandmarks(canvasCtx, results.poseLandmarks, {	// 랜드마크 표시
+          color: '#FF0000', lineWidth: 2
+      });
+      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,{	// 연결 선 표시
+              color: '#0000FF', lineWidth: 3
+          });
+      canvasCtx.restore();	// 캔버스 설정 불러오기
+    });
+
+
+  </script>
+</body>
+</html>
